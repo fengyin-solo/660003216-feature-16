@@ -31,9 +31,21 @@
     <div v-if="store.similarMolecules.length > 0" class="mt-4">
       <h4 class="text-xs font-bold text-slate-500 mb-2">相似分子 (Tanimoto)</h4>
       <div class="space-y-1">
-        <div v-for="mol in store.similarMolecules" :key="mol.id" @click="store.selectMolecule(mol)" class="cursor-pointer flex items-center justify-between bg-slate-900 rounded p-2 hover:bg-slate-700 transition">
-          <span class="text-sm text-slate-200">{{ mol.name }}</span>
-          <span class="text-xs font-bold" :style="{ color: mol.similarity > 60 ? '#22c55e' : mol.similarity > 30 ? '#eab308' : '#94a3b8' }">{{ mol.similarity }}%</span>
+        <div v-for="mol in store.similarMolecules" :key="mol.id" @click="store.selectMolecule(mol)" class="cursor-pointer bg-slate-900 rounded p-2 hover:bg-slate-700 transition">
+          <div class="flex items-center justify-between">
+            <span class="text-sm text-slate-200">
+              {{ mol.name }}
+              <span v-if="mol.favorite" class="ml-1">⭐</span>
+              <span v-if="mol.candidate" class="ml-1">🧪</span>
+              <span v-if="mol.highRisk" class="ml-1">⚠️</span>
+            </span>
+            <span class="text-xs font-bold" :style="{ color: mol.similarity > 60 ? '#22c55e' : mol.similarity > 30 ? '#eab308' : '#94a3b8' }">{{ mol.similarity }}%</span>
+          </div>
+          <div class="flex gap-1 mt-2">
+            <button @click.stop="store.toggleFavorite(mol.id)" :class="['px-2 py-0.5 text-xs rounded transition-colors', mol.favorite ? 'bg-yellow-500 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600']">⭐</button>
+            <button @click.stop="store.toggleCandidate(mol.id)" :class="['px-2 py-0.5 text-xs rounded transition-colors', mol.candidate ? 'bg-green-500 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600']">🧪</button>
+            <button @click.stop="store.toggleHighRisk(mol.id)" :class="['px-2 py-0.5 text-xs rounded transition-colors', mol.highRisk ? 'bg-red-500 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600']">⚠️</button>
+          </div>
         </div>
       </div>
     </div>

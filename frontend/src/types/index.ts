@@ -1,1 +1,1 @@
-export interface Atom3D {
+export interface Atom3D

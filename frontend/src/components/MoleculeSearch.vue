@@ -1,7 +1,8 @@
 <template>
   <div class="bg-slate-800 rounded-lg p-4 border border-slate-700">
     <h3 class="text-sm font-bold text-slate-400 mb-3">分子数据库 ({{ store.molecules.length }})</h3>
-    <input v-model="query" @input="onSearch" placeholder="搜索分子名/类别/SMILES..." class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-1.5 text-sm mb-3 focus:outline-none focus:border-cyan-500" />
+    <input v-model="query" @input="onSearch" placeholder="搜索分子名/类别/SMILES..." class="w-full bg-slate-900 border border-slate-600 rounded-lg px-3 py-1.5 text-sm mb-2 focus:outline-none focus:border-cyan-500" />
+    <div class="text-xs text-slate-500 mb-2 text-center">⭐{{ store.favoriteCount }} 🧪{{ store.candidateCount }} ⚠️{{ store.highRiskCount }}</div>
     <div class="flex gap-1 mb-3">
       <button @click="store.statusFilter = 'all'" :class="['flex-1 px-2 py-1 text-xs rounded font-medium transition-colors', store.statusFilter === 'all' ? 'bg-cyan-600 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600']">全部</button>
       <button @click="store.statusFilter = 'favorite'" :class="['flex-1 px-2 py-1 text-xs rounded font-medium transition-colors', store.statusFilter === 'favorite' ? 'bg-yellow-600 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600']">⭐ 收藏</button>

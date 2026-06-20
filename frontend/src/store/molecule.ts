@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { MoleculeData, ADMETProps, StatusFilter } from '../types'
+import type { MoleculeData, ADMETProps, StatusFilter, SimilarMolecule, MoleculeStatus } from '../types'
 
 const ATOM_COLORS: Record<string, string> = {
   C: '#6b7280', N: '#3b82f6', O: '#ef4444', S: '#eab308',
@@ -112,11 +112,19 @@ export const useMoleculeStore = defineStore('molecule', () => {
       const q = searchQuery.value.toLowerCase()
       result = result.filter(m => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q) || m.smiles.toLowerCase().includes(q))
     }
-    if (statusFilter.value !== 'all') {
-      result = result.filter(m => m[statusFilter.value])
+    if (statusFilter.value === 'favorite') {
+      result = result.filter(m => m.favorite)
+    } else if (statusFilter.value === 'candidate') {
+      result = result.filter(m => m.candidate)
+    } else if (statusFilter.value === 'highRisk') {
+      result = result.filter(m => m.highRisk)
     }
     return result
   })
+
+  const favoriteCount = computed(() => molecules.value.filter(m => m.favorite).length)
+  const candidateCount = computed(() => molecules.value.filter(m => m.candidate).length)
+  const highRiskCount = computed(() => molecules.value.filter(m => m.highRisk).length)
 
   function loadMolecules() {
     molecules.value = MOCK_MOLECULES.map(m => {
@@ -136,19 +144,21 @@ export const useMoleculeStore = defineStore('molecule', () => {
     searchResults.value = filteredMolecules.value
   }
 
-  function toggleFavorite(id: number) {
+  function toggleStatus(id: number, key: keyof MoleculeStatus) {
     const mol = molecules.value.find(m => m.id === id)
-    if (mol) mol.favorite = !mol.favorite
+    if (mol) mol[key] = !mol[key]
+  }
+
+  function toggleFavorite(id: number) {
+    toggleStatus(id, 'favorite')
   }
 
   function toggleCandidate(id: number) {
-    const mol = molecules.value.find(m => m.id === id)
-    if (mol) mol.candidate = !mol.candidate
+    toggleStatus(id, 'candidate')
   }
 
   function toggleHighRisk(id: number) {
-    const mol = molecules.value.find(m => m.id === id)
-    if (mol) mol.highRisk = !mol.highRisk
+    toggleStatus(id, 'highRisk')
   }
 
   function computeTanimoto(smiles1: string, smiles2: string): number {
@@ -160,7 +170,7 @@ export const useMoleculeStore = defineStore('molecule', () => {
     return union === 0 ? 0 : Math.round((intersection / union) * 1000) / 10
   }
 
-  const similarMolecules = computed(() => {
+  const similarMolecules = computed((): SimilarMolecule[] => {
     if (!currentMolecule.value) return []
     return molecules.value
       .map(m => ({ ...m, similarity: computeTanimoto(currentMolecule.value!.smiles, m.smiles) }))
@@ -171,7 +181,7 @@ export const useMoleculeStore = defineStore('molecule', () => {
 
   return {
     molecules, currentMolecule, admet, searchQuery, searchResults, isLoading, statusFilter,
-    filteredMolecules, similarMolecules,
+    filteredMolecules, similarMolecules, favoriteCount, candidateCount, highRiskCount,
     loadMolecules, selectMolecule, searchMolecules, toggleFavorite, toggleCandidate, toggleHighRisk
   }
 })

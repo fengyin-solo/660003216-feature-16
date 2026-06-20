@@ -5,6 +5,11 @@
       <div v-if="store.currentMolecule" class="text-right">
         <div class="text-lg font-bold text-cyan-400">{{ store.currentMolecule.name }}</div>
         <div class="text-xs text-slate-500">{{ store.currentMolecule.formula }} · MW {{ store.currentMolecule.mw }}</div>
+        <div class="text-xs mt-1">
+          <span v-if="store.currentMolecule.favorite" class="ml-1">⭐</span>
+          <span v-if="store.currentMolecule.candidate" class="ml-1">🧪</span>
+          <span v-if="store.currentMolecule.highRisk" class="ml-1">⚠️</span>
+        </div>
       </div>
     </div>
     <div ref="containerRef" class="w-full h-96 bg-slate-900 rounded-lg border border-slate-700 flex items-center justify-center">
